@@ -1,0 +1,20 @@
+# !! File must end with empty line !!
+dependencies:
+- alias: expose
+  name: exposecontroller
+  repository: http://chartmuseum.jenkins-x.io
+  version: 2.3.92
+- alias: cleanup
+  name: exposecontroller
+  repository: http://chartmuseum.jenkins-x.io
+  version: 2.3.92
+- name: frontend
+  repository: file://../frontend
+  frontend_version:
+
+  # !! "alias: preview" must be last entry in dependencies array !!
+  # !! Place custom dependencies above !!
+- alias: preview
+  name: web
+  repository: file://../web
+  web_version:

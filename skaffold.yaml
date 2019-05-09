@@ -1,0 +1,77 @@
+apiVersion: skaffold/v1beta2
+kind: Config
+build:
+  tagPolicy:
+    envTemplate:
+      template: "{{.DOCKER_REGISTRY}}/kuflink/{{.IMAGE_NAME}}:{{.VERSION}}"
+  artifacts:
+  - image: web
+    context: .
+    docker:
+      dockerfile: nginx.Dockerfile
+  - image: frontend
+    context: .
+    docker:
+      dockerfile: nginx.Dockerfile
+  - image: api
+    context: .
+    docker:
+      dockerfile: nginx.Dockerfile
+  local: {}
+
+
+
+deploy:
+  kubectl:
+    manifests:
+profiles:
+- name: web
+  build:
+    tagPolicy:
+      envTemplate:
+        template: "{{.DOCKER_REGISTRY}}/kuflink/web:{{.VERSION}}"
+    artifacts:
+    - docker: {}
+    local: {}
+  deploy:
+    helm:
+      releases:
+      - name: web
+        chartPath: charts/web
+        setValueTemplates:
+          image.repository: "{{.DOCKER_REGISTRY}}/kuflink/web"
+          image.tag: "{{.VERSION}}"
+
+- name: frontend
+  build:
+    tagPolicy:
+      envTemplate:
+        template: "{{.DOCKER_REGISTRY}}/kuflink/frontend:{{.VERSION}}"
+    artifacts:
+    - docker: {}
+    local: {}
+  deploy:
+    helm:
+      releases:
+      - name: frontend
+        chartPath: charts/frontend
+        setValueTemplates:
+          image.repository: "{{.DOCKER_REGISTRY}}/kuflink/frontend"
+          image.tag: "{{.VERSION}}"
+
+- name: api
+  build:
+    tagPolicy:
+      envTemplate:
+        template: "{{.DOCKER_REGISTRY}}/kuflink/api:{{.VERSION}}"
+    artifacts:
+    - docker: {}
+    local: {}
+  deploy:
+    helm:
+      releases:
+      - name: api
+        chartPath: charts/api
+        setValueTemplates:
+          image.repository: "{{.DOCKER_REGISTRY}}/kuflink/api"
+          image.tag: "{{.VERSION}}"
